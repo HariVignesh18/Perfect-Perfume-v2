@@ -1,0 +1,91 @@
+.checkout-box h1 {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.checkout-box hr {
+  margin-bottom: 25px;
+  border: 1px solid #ccc;
+}
+
+/* GRID LAYOUT */
+.form-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.form-row label {
+  width: 40%;
+  text-align: left;
+  font-weight: 500;
+}
+
+.form-row input,
+.form-row select {
+  width: 55%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* BUTTONS */
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.actions button {
+  width: 45%;
+  padding: 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.actions button[type="submit"] {
+  background-color: black;
+  color: white;
+}
+
+.actions button[type="reset"] {
+  background-color: gray;
+  color: white;
+}
+
+/* NOTE TEXT */
+.note {
+  margin-top: 20px;
+  font-size: 13px;
+  color: #444;
+  text-align: center;
+}
+
+.checkout-container {
+  background-color: #333;
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+}
+
+.checkout-box {
+  background-color: #fff;
+  padding: 40px;
+
+  width: 100%;
+  max-width: 700px;   /* 🔥 THIS is the key */
+
+  border-radius: 10px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}

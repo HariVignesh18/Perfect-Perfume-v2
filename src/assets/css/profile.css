@@ -1,0 +1,61 @@
+.profile-page {
+  min-height: 100vh;
+  background: #2c2c2c;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.profile-card {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  width: 350px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.avatar-large {
+  width: 70px;
+  height: 70px;
+  background: #4caf50;
+  color: white;
+  font-size: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px;
+}
+
+.profile-actions {
+  margin: 20px 0;
+}
+
+.profile-actions button {
+  margin: 5px;
+  padding: 8px 12px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.primary {
+  background: black;
+  color: white;
+}
+
+.logout {
+  background: grey;
+  color: white;
+}
+
+.danger {
+  margin-top: 20px;
+}
+
+.delete {
+  background: red;
+  color: white;
+  padding: 10px;
+}
