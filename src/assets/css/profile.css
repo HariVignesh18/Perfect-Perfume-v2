@@ -59,3 +59,22 @@
   color: white;
   padding: 10px;
 }
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media screen and (max-width: 768px) {
+
+  .profile-page {
+    padding: 15px;
+  }
+
+  .profile-card {
+    width: 90%;
+    max-width: 350px;
+    padding: 25px 20px;
+  }
+
+  .profile-actions button {
+    width: 100%;
+    margin: 5px 0;
+  }
+}

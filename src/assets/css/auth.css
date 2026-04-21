@@ -132,3 +132,27 @@
   display: block;
   text-align: center;
 }
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media screen and (max-width: 768px) {
+
+  .auth-page {
+    padding: 15px;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .auth-page form {
+    padding: 25px 20px;
+    margin: 20px 0;
+  }
+
+  .auth-page h1 {
+    font-size: 1.4rem;
+    padding-bottom: 15px;
+  }
+
+  .auth-page input {
+    padding: 10px;
+  }
+}

@@ -10,6 +10,7 @@ export default function Header() {
   const { cartCount } = useCart();
 
   const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("home");
 
   const navigate = useNavigate();
@@ -114,12 +115,20 @@ export default function Header() {
       <nav>
         <h1>Perfect Perfume</h1>
 
-        <ol className="menu">
+        <button
+          className="hamburger"
+          onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle menu"
+        >
+          {menuOpen ? "\u2715" : "\u2630"}
+        </button>
+
+        <ol className={`menu ${menuOpen ? "menu-open" : ""}`}>
           {/* Home */}
           <li>
             <span
               className={activeSection === "home" ? "active" : ""}
-              onClick={goHome}
+              onClick={() => { goHome(); setMenuOpen(false); }}
               style={{ cursor: "pointer" }}
             >
               Home
@@ -130,7 +139,7 @@ export default function Header() {
           <li>
             <span
               className={activeSection === "product" ? "active" : ""}
-              onClick={() => scrollToSection("navprod")}
+              onClick={() => { scrollToSection("navprod"); setMenuOpen(false); }}
               style={{ cursor: "pointer" }}
             >
               Product
@@ -141,7 +150,7 @@ export default function Header() {
           <li>
             <span
               className={activeSection === "contact" ? "active" : ""}
-              onClick={() => scrollToSection("navcon")}
+              onClick={() => { scrollToSection("navcon"); setMenuOpen(false); }}
               style={{ cursor: "pointer" }}
             >
               Contact

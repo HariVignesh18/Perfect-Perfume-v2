@@ -242,3 +242,84 @@ html, body, #root {
     font-size: 20px; /* Increase the font size inside the dropdown */
     padding: 5px 5px; /* Add some padding inside the dropdown */
 }
+
+/* ===== MOBILE RESPONSIVE ===== */
+@media screen and (max-width: 768px) {
+
+  /* Stack image + details vertically */
+  .product-detail {
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+    margin-top: 10px;
+  }
+
+  .product-detail img {
+    width: 100%;
+    max-width: 350px;
+    height: auto;
+    margin: 0 0 20px 0;
+  }
+
+  .product-info {
+    max-width: 100%;
+    padding: 0 10px;
+  }
+
+  .product-detail h1 {
+    font-size: 26px;
+  }
+
+  .product-detail p {
+    font-size: 16px;
+  }
+
+  .product-detail .price {
+    font-size: 20px;
+  }
+
+  .product-detail .add-to-cart,
+  .product-detail .buy-now {
+    padding: 10px 16px;
+    font-size: 14px;
+    margin: 10px 5px 10px 0;
+  }
+
+  .product-detail .buy-now {
+    margin-left: 0;
+  }
+
+  /* Specs table */
+  .product-specifications h1 {
+    font-size: 22px;
+  }
+
+  .product-specifications th,
+  .product-specifications td {
+    font-size: 15px;
+    padding: 6px 4px;
+  }
+
+  /* Quantity */
+  .quantity-container {
+    width: 100%;
+    max-width: 220px;
+    font-size: 20px;
+  }
+
+  /* Social footer */
+  .social-menu ul {
+    margin-left: 0;
+    justify-content: center;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .product-detail img {
+    max-width: 280px;
+  }
+
+  .product-detail h1 {
+    font-size: 22px;
+  }
+}
