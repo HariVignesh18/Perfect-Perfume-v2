@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "../assets/css/checkout.css";
 import toast from "react-hot-toast";
 import { useCart } from "../context/CartContext";
-import API_BASE from "../config/api";
+import API_BASE, { RAZOR_PAY } from "../config/api";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ export default function Checkout() {
   });
   const location = useLocation();
   const buyNowItem = location.state?.buyNowItem;
-  const { fetchCart } = useCart();
+  const { cartItems, fetchCart } = useCart();
 
   const [submitting, setSubmitting] = useState(false);
 
@@ -25,58 +25,128 @@ export default function Checkout() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
   const handleSubmit = async (e) => {
-    const toastId = toast.loading("Placing your order...");
   e.preventDefault();
-  console.log("BuyNowItem:", buyNowItem);
-  const url = buyNowItem
-    ? `${API_BASE}/api/order/buy-now`
-    : `${API_BASE}/api/order/cart`;
-
-  const body = buyNowItem
-    ? {
-        product_id: buyNowItem.product_id,
-        quantity: buyNowItem.quantity,
-        plotno: form.room,
-        street: form.street,
-        area: form.area,
-        state: form.state,
-        pincode: form.pincode,
-        country: form.country,
-      }
-    : {
-        plotno: form.room,
-        street: form.street,
-        area: form.area,
-        state: form.state,
-        pincode: form.pincode,
-        country: form.country,
-      };
+  setSubmitting(true);
+  const toastId = toast.loading("Processing payment...");
 
   try {
-    const res = await fetch(url, {
+    // 🔹 STEP 1: Calculate amount
+    const amount = buyNowItem
+      ? buyNowItem.price * buyNowItem.quantity
+      : cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+    if (amount <= 0) {
+      toast.error("Cart is empty or invalid amount", { id: toastId });
+      setSubmitting(false);
+      return;
+    }
+
+    // 🔹 STEP 2: Create Razorpay order
+    const orderRes = await fetch(`${API_BASE}/api/create-razorpay-order`, {
       method: "POST",
       credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount }),
     });
 
-    const data = await res.json();
+    const order = await orderRes.json();
 
-    if (res.ok) {
-        toast.success("Order placed successfully 🎉", { id: toastId }); 
-      navigate("/order-confirmation");
-      await fetchCart();
-    } else {
-        toast.error(data.error || "Order failed", { id: toastId });
-    }
+    // 🔹 STEP 3: Open Razorpay
+    const options = {
+      key: RAZOR_PAY,
+      amount: order.amount,
+      currency: "INR",
+      order_id: order.id,
+      name: "Perfect Perfume",
+      description: "Test Mode — Use UPI: success@razorpay",
+      prefill: {
+        email: "test@example.com",
+        contact: "9999999999",
+      },
+
+      handler: async function (response) {
+        // 🔹 STEP 4: Verify payment
+        const verifyRes = await fetch(`${API_BASE}/api/verify-payment`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(response),
+        });
+
+        const verifyData = await verifyRes.json();
+
+        if (verifyData.status === "success") {
+          // 🔹 STEP 5: NOW place order (your original logic)
+
+          const url = buyNowItem
+            ? `${API_BASE}/api/order/buy-now`
+            : `${API_BASE}/api/order/cart`;
+
+          const body = buyNowItem
+            ? {
+                product_id: buyNowItem.product_id,
+                quantity: buyNowItem.quantity,
+                plotno: form.room,
+                street: form.street,
+                area: form.area,
+                state: form.state,
+                pincode: form.pincode,
+                country: form.country,
+              }
+            : {
+                plotno: form.room,
+                street: form.street,
+                area: form.area,
+                state: form.state,
+                pincode: form.pincode,
+                country: form.country,
+              };
+
+          const res = await fetch(url, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+          });
+
+          const data = await res.json();
+
+          if (res.ok) {
+            toast.success("Payment successful 🎉", { id: toastId });
+            navigate("/order-confirmation");
+            await fetchCart();
+          } else {
+            toast.error(data.error || "Order failed", { id: toastId });
+            setSubmitting(false);
+          }
+        } else {
+          toast.error("Payment verification failed", { id: toastId });
+          setSubmitting(false);
+        }
+      },
+
+      theme: {
+        color: "#111",
+      },
+      modal: {
+        ondismiss: function () {
+          toast.dismiss(toastId);
+          setSubmitting(false);
+        },
+      },
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+
   } catch (err) {
     console.log(err);
-    toast.error(data.error || "Something went wrong");;
+    toast.error("Something went wrong", { id: toastId });
+    setSubmitting(false);
   }
 };
-
   return (
     <div className="checkout-container">
       <div className="checkout-box">
@@ -153,6 +223,14 @@ export default function Checkout() {
             <b>NOTE:</b><br />
             "You can pay upon delivery after inspecting your perfume."
           </p>
+
+          <div className="test-payment-info">
+            <p><b>🧪 Demo Mode — Test Payment Guide</b></p>
+            <p><b>UPI:</b> Enter <code>success@razorpay</code></p>
+            <p><b>Card:</b> <code>4111 1111 1111 1111</code> | Expiry: any future | CVV: any 3 digits</p>
+            <p><b>Netbanking:</b> Select any bank → click Success</p>
+            <p style={{ fontSize: '11px', opacity: 0.7 }}>QR scan won't work in test mode</p>
+          </div>
         </form>
       </div>
     </div>

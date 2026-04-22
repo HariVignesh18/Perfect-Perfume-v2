@@ -18,6 +18,7 @@ export default function Product() {
       buyNowItem: {
         product_id: product.id,
         quantity: 1,
+        price: product.price,
       },
     },
   });
