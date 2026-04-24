@@ -63,7 +63,12 @@ export default function Checkout() {
         email: "test@example.com",
         contact: "9999999999",
       },
-
+      method: {
+        upi: false,
+        card: false,
+        emi: false,
+        paylater: false
+      },
       handler: async function (response) {
         // 🔹 STEP 4: Verify payment
         const verifyRes = await fetch(`${API_BASE}/api/verify-payment`, {
@@ -226,10 +231,8 @@ export default function Checkout() {
 
           <div className="test-payment-info">
             <p><b>🧪 Demo Mode — Test Payment Guide</b></p>
-            <p><b>UPI:</b> Enter <code>success@razorpay</code></p>
-            <p><b>Card:</b> <code>4111 1111 1111 1111</code> | Expiry: any future | CVV: any 3 digits</p>
             <p><b>Netbanking:</b> Select any bank → click Success</p>
-            <p style={{ fontSize: '11px', opacity: 0.7 }}>QR scan won't work in test mode</p>
+            <p><b>Wallet:</b> Select any wallet → click Success</p>
           </div>
         </form>
       </div>
