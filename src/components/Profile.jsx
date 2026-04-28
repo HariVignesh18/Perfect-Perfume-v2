@@ -103,7 +103,7 @@ export default function Profile() {
       <div className="profile-card">
 
         <div className="avatar-large">
-          {(user.username?.[0] || "?").toUpperCase()}
+          {user.username?.[0] || "?"}
         </div>
 
         <div className="profile-name-section">

@@ -86,7 +86,7 @@
 /* ===== ORDERS LIST PAGE ===== */
 .orders-container {
   min-height: calc(100vh - 65px);
-  background: #1a1a1a;
+  background: rgb(255, 255, 255);
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -99,7 +99,7 @@
 }
 
 .orders-page h2 {
-  color: #fff;
+  color: #373535;
   font-size: 1.8rem;
   margin-bottom: 24px;
 }
