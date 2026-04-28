@@ -1,80 +1,270 @@
 .profile-page {
-  min-height: 100vh;
-  background: #2c2c2c;
+  min-height: calc(100vh - 65px);
+  background: #1a1a1a;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: 30px 20px;
 }
 
 .profile-card {
-  background: white;
+  background: #2a2a2a;
   padding: 40px;
-  border-radius: 20px;
-  width: 350px;
+  border-radius: 16px;
+  width: 400px;
   text-align: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  border: 1px solid #3a3a3a;
 }
 
 .avatar-large {
-  width: 70px;
-  height: 70px;
-  background: #4caf50;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, #f0a500, #e65100);
   color: white;
-  font-size: 28px;
+  font-size: 32px;
+  font-weight: 700;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 15px;
+  margin: 0 auto 20px;
+  box-shadow: 0 4px 12px rgba(240, 165, 0, 0.3);
 }
 
+/* ===== NAME SECTION ===== */
+.profile-name-section {
+  margin-bottom: 6px;
+}
+
+.display-name-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.display-name-wrapper h2 {
+  color: #fff;
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.btn-edit {
+  background: none;
+  border: 1px solid #555;
+  color: #aaa;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn-edit:hover {
+  background: #333;
+  color: #f0a500;
+  border-color: #f0a500;
+}
+
+/* ===== EDIT MODE ===== */
+.edit-name-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-name-input {
+  background: #333;
+  border: 1px solid #555;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 80%;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.edit-name-input:focus {
+  border-color: #f0a500;
+}
+
+.name-status {
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.name-status.checking {
+  color: #999;
+}
+
+.name-status.error {
+  color: #ef5350;
+}
+
+.name-status.available {
+  color: #66bb6a;
+}
+
+.edit-name-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.btn-save {
+  background: #f0a500;
+  color: #000;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-save:hover:not(:disabled) {
+  background: #ffb726;
+}
+
+.btn-save:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-cancel {
+  background: transparent;
+  color: #999;
+  border: 1px solid #555;
+  padding: 8px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-cancel:hover {
+  background: #333;
+  color: #fff;
+}
+
+/* ===== EMAIL ===== */
+.profile-email {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 24px;
+}
+
+/* ===== ACTION BUTTONS ===== */
 .profile-actions {
-  margin: 20px 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 24px;
 }
 
 .profile-actions button {
-  margin: 5px;
-  padding: 8px 12px;
-  border: none;
+  padding: 10px 18px;
+  border: 1px solid #444;
+  background: transparent;
+  color: #ccc;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  transition: all 0.2s;
 }
 
-.primary {
-  background: black;
-  color: white;
+.profile-actions button:hover {
+  background: #333;
+  color: #fff;
+  border-color: #666;
 }
 
-.logout {
-  background: grey;
-  color: white;
+.profile-actions .primary {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+  font-weight: 600;
 }
 
+.profile-actions .primary:hover {
+  background: #ddd;
+  color: #000;
+  border-color: #ddd;
+}
+
+.profile-actions .logout {
+  background: transparent;
+  color: #ef5350;
+  border-color: #ef5350;
+}
+
+.profile-actions .logout:hover {
+  background: #ef5350;
+  color: #fff;
+}
+
+/* ===== DANGER ZONE ===== */
 .danger {
-  margin-top: 20px;
+  border-top: 1px solid #3a3a3a;
+  padding-top: 20px;
+  margin-top: 8px;
+}
+
+.danger h3 {
+  color: #ef5350;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.danger p {
+  color: #777;
+  font-size: 0.8rem;
+  margin-bottom: 12px;
 }
 
 .delete {
-  background: red;
-  color: white;
-  padding: 10px;
+  background: transparent;
+  color: #ef5350;
+  border: 1px solid #ef5350;
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.delete:hover {
+  background: #ef5350;
+  color: #fff;
 }
 
 /* ===== MOBILE RESPONSIVE ===== */
 @media screen and (max-width: 768px) {
 
   .profile-page {
-    padding: 15px;
+    padding: 20px 12px;
+    align-items: flex-start;
   }
 
   .profile-card {
-    width: 90%;
-    max-width: 350px;
-    padding: 25px 20px;
+    width: 100%;
+    max-width: 400px;
+    padding: 30px 20px;
+  }
+
+  .profile-actions {
+    flex-direction: column;
   }
 
   .profile-actions button {
     width: 100%;
-    margin: 5px 0;
   }
 }

@@ -120,7 +120,9 @@ export default function Checkout() {
 
           if (res.ok) {
             toast.success("Payment successful 🎉", { id: toastId });
-            navigate("/order-confirmation");
+            navigate("/order-confirmation", {
+              state: { order_group_id: data.order_group_id }
+            });
             await fetchCart();
           } else {
             toast.error(data.error || "Order failed", { id: toastId });

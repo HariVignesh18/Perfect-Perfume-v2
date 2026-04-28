@@ -12,6 +12,7 @@ import Profile from "./components/Profile";
 import OAuthCallback from "./components/OAuthCallback";
 import Checkout from "./components/Checkout";
 import OrderConfirmation from "./components/OrderConfirmation";
+import Orders from "./components/Orders";
 import { Toaster } from "react-hot-toast";
 
 export default function App() {
@@ -26,6 +27,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/product/:id" element={<Product />} />
+          <Route path="/orders" element={<Orders />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

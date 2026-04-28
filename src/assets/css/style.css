@@ -434,11 +434,12 @@ html {
 }
 
 .menu a {
-  color: white;
+  color: grey;
   text-decoration: none;
 }
 
-.menu a.active {
+.menu a.active,
+.menu span.active {
   color: orange;
 }
 .back-link {

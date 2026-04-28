@@ -1,24 +1,28 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "../assets/css/order.css";
 import "../assets/css/loader.css";
 import API_BASE from "../config/api";
 
 export default function OrderConfirmation() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const order_group_id = location.state?.order_group_id;
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await fetch(
-          `${API_BASE}/api/order/confirmation`,
-          {
-            credentials: "include",
-          }
-        );
+        const url = order_group_id
+          ? `${API_BASE}/api/order/confirmation?order_group_id=${order_group_id}`
+          : `${API_BASE}/api/order/confirmation`;
+
+        const res = await fetch(url, {
+          credentials: "include",
+        });
 
         const data = await res.json();
 
@@ -33,7 +37,7 @@ export default function OrderConfirmation() {
     };
 
     fetchOrders();
-  }, []);
+  }, [order_group_id]);
 
   if (loading){
     return (

@@ -17,6 +17,15 @@ export default function Header() {
   const location = useLocation();
   const dropdownRef = useRef();
 
+  // ✅ Clear activeSection when navigating away from home
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      setActiveSection("");
+    } else {
+      setActiveSection("home");
+    }
+  }, [location.pathname]);
+
   // ✅ Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -28,60 +37,30 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ✅ Scroll-based section detection
+  // ✅ Single scroll-based section detection
   useEffect(() => {
-  if (location.pathname !== "/") return;
+    if (location.pathname !== "/") return;
 
-  const sections = [
-    { id: "navprod", name: "product" },
-    { id: "navcon", name: "contact" },
-  ];
+    const handleScroll = () => {
+      const navprodEl = document.getElementById("navprod");
+      const scrollY = window.scrollY + 120; // offset for header height
 
-  const timeout = setTimeout(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const match = sections.find(
-              (sec) => sec.id === entry.target.id
-            );
-            if (match) {
-              setActiveSection(match.name);
-            }
-          }
-        });
-      },
-      {
-        threshold: 0.3,
+      if (navprodEl && scrollY >= navprodEl.offsetTop) {
+        setActiveSection("product");
+      } else {
+        setActiveSection("home");
       }
-    );
+    };
 
-    sections.forEach((section) => {
-      const el = document.getElementById(section.id);
-      if (el) observer.observe(el);
-    });
+    // Run once on mount + after DOM is ready
+    const timeout = setTimeout(handleScroll, 100);
 
-    return () => observer.disconnect();
-  }, 100); // 👈 wait for DOM render
-
-  return () => clearTimeout(timeout);
-}, [location.pathname]);
-
-  // ✅ Detect top → Home
-  useEffect(() => {
-  if (location.pathname !== "/") return;
-
-  const handleScroll = () => {
-    if (window.scrollY < 80) {
-      setActiveSection("home");
-    }
-  };
-
-  handleScroll(); // 👈 IMPORTANT (runs on load)
-
-  window.addEventListener("scroll", handleScroll);
-  return () => window.removeEventListener("scroll", handleScroll);
-}, [location.pathname]);
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      clearTimeout(timeout);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [location.pathname]);
 
   // ✅ Logout
   const handleLogout = () => {
@@ -127,8 +106,8 @@ export default function Header() {
           {/* Home */}
           <li>
             <span
-              className={activeSection === "home" ? "active" : ""}
-              onClick={() => { goHome(); setMenuOpen(false); }}
+              className={location.pathname === "/" && activeSection === "home" ? "active" : ""}
+              onClick={() => { setActiveSection("home"); goHome(); setMenuOpen(false); }}
               style={{ cursor: "pointer" }}
             >
               Home
@@ -138,30 +117,33 @@ export default function Header() {
           {/* Product */}
           <li>
             <span
-              className={activeSection === "product" ? "active" : ""}
-              onClick={() => { scrollToSection("navprod"); setMenuOpen(false); }}
+              className={location.pathname === "/" && activeSection === "product" ? "active" : ""}
+              onClick={() => { setActiveSection("product"); scrollToSection("navprod"); setMenuOpen(false); }}
               style={{ cursor: "pointer" }}
             >
               Product
             </span>
           </li>
 
-          {/* Contact */}
+
           <li>
-            <span
-              className={activeSection === "contact" ? "active" : ""}
-              onClick={() => { scrollToSection("navcon"); setMenuOpen(false); }}
-              style={{ cursor: "pointer" }}
-            >
-              Contact
-            </span>
+            <NavLink
+  to="/orders"
+  className={({ isActive }) => (isActive ? "active" : "")}
+  onClick={() => setMenuOpen(false)}
+>
+  Orders
+</NavLink>
           </li>
 
           {/* Cart */}
           <li>
             <NavLink
               to="/cart"
-              className={`cart-wrapper ${location.pathname === "/cart" ? "active" : ""}`}
+              className={({ isActive }) =>
+                `cart-wrapper ${isActive ? "active" : ""}`
+              }
+              onClick={() => setMenuOpen(false)}
             >
               <div className="cart-icon-container">
                 <FaShoppingCart className="cart-icon" />
