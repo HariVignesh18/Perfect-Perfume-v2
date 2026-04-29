@@ -2,16 +2,15 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../assets/css/loader.css";
 import toast from "react-hot-toast";
-import { useCart } from "../context/CartContext"; // ✅ NEW
+import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
 import API_BASE from "../config/api";
 
 export default function Cart() {
-  const { cartItems, fetchCart } = useCart(); // ✅ USE CONTEXT
+  const { cartItems, setCartItems, cartCount, setCartCount, fetchCart } = useCart();
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // 🔥 Fetch cart ONCE
   useEffect(() => {
     const load = async () => {
       await fetchCart();
@@ -20,7 +19,6 @@ export default function Cart() {
     load();
   }, []);
 
-  // 🔥 Remove item
   const removeItem = async (id) => {
     const toastId = toast.loading("Removing item...");
 
@@ -35,8 +33,7 @@ export default function Cart() {
 
       if (res.ok) {
         toast.success("Item removed!", { id: toastId });
-
-        await fetchCart(); // ✅ SINGLE SOURCE UPDATE
+        await fetchCart();
       } else {
         toast.error("Failed to remove item", { id: toastId });
       }
@@ -46,7 +43,6 @@ export default function Cart() {
     }
   };
 
-  // 🔥 Clear cart
   const clearCart = async () => {
     if (!window.confirm("Are you sure you want to empty your cart?")) return;
 
@@ -65,8 +61,7 @@ export default function Cart() {
 
       if (res.ok) {
         toast.success("Cart cleared 🧹", { id: toastId });
-
-        await fetchCart(); // ✅ sync everything
+        await fetchCart();
       } else {
         toast.error("Failed to clear cart", { id: toastId });
       }
@@ -75,7 +70,33 @@ export default function Cart() {
     }
   };
 
-  // 🔥 Calculate total
+  const updateQty = (id, newQty) => {
+    if (newQty < 1) return;
+
+    // Optimistic update — instant UI change
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, quantity: newQty } : item
+      )
+    );
+    setCartCount((prev) => {
+      const oldItem = cartItems.find((i) => i.id === id);
+      return prev + (newQty - (oldItem?.quantity || 0));
+    });
+
+    // Background sync — no await, no blocking
+    fetch(`${API_BASE}/api/cart/update/${id}`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ quantity: newQty }),
+    }).catch(() => {
+      // Revert on failure
+      fetchCart();
+      toast.error("Failed to update quantity");
+    });
+  };
+
   const grandTotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
@@ -92,77 +113,82 @@ export default function Cart() {
 
   return (
     <div className="cart-container">
-      <div className="cart-box">
-        <h1>YOUR CART</h1>
-
-        <div className="return-home-wrapper">
-          <Link to="/" className="return-home-btn">
-            Return to home
-          </Link>
-        </div>
+      <div className="cart-page">
+        <h2>Your Cart</h2>
 
         {cartItems.length > 0 ? (
           <>
-            <div className="table-wrapper">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Product Name</th>
-                    <th>Gender</th>
-                    <th>Form</th>
-                    <th>Ingredients</th>
-                    <th>Feature</th>
-                    <th>Volume</th>
-                    <th>Country</th>
-                    <th>Qty</th>
-                    <th>Price</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
+            <div className="cart-items">
+              {cartItems.map((item) => (
+                <div key={item.id} className="cart-item-card">
+                  <div className="cart-item-header">
+                    <span className="cart-item-name">{item.name}</span>
+                    <span className="cart-item-subtotal">
+                      ₹{item.price * item.quantity}
+                    </span>
+                  </div>
 
-                <tbody>
-                  {cartItems.map((item) => (
-                    <tr key={item.id}>
-                      <td>{item.name}</td>
-                      <td>{item.gender}</td>
-                      <td>{item.form}</td>
-                      <td>{item.ingredients}</td>
-                      <td>{item.feature}</td>
-                      <td>{item.volume}</td>
-                      <td>{item.country}</td>
-                      <td>{item.quantity}</td>
-                      <td>₹{item.price}</td>
-                      <td>
-                        <button
-                          className="btn-delete"
-                          onClick={() => removeItem(item.id)}
-                        >
-                          Remove
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+                  <div className="cart-item-details">
+                    <span className="cart-item-price">₹{item.price} each</span>
+                    <div className="cart-qty-controls">
+                      <button
+                        className="qty-btn"
+                        onClick={() => updateQty(item.id, item.quantity - 1)}
+                        disabled={item.quantity <= 1}
+                      >
+                        −
+                      </button>
+                      <span className="qty-value">{item.quantity}</span>
+                      <button
+                        className="qty-btn"
+                        onClick={() => updateQty(item.id, item.quantity + 1)}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="cart-item-footer">
+                    <span className="cart-item-meta">
+                      {item.volume}ml · {item.form} · {item.country}
+                    </span>
+                    <button
+                      className="cart-item-remove"
+                      onClick={() => removeItem(item.id)}
+                    >
+                      ✕ Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
 
-            <h3 className="total">Total: ₹ {grandTotal}</h3>
+            <div className="cart-summary-card">
+              <div className="cart-summary-row">
+                <span>{cartItems.length} item{cartItems.length > 1 ? "s" : ""}</span>
+                <span className="cart-summary-total">₹{grandTotal}</span>
+              </div>
 
-            <div className="cart-actions">
-              <button className="empty-cart" onClick={clearCart}>
-                Empty Cart
-              </button>
-
-              <button
-                className="buy-now"
-                onClick={() => navigate("/checkout")}
-              >
-                Proceed to Pay
-              </button>
+              <div className="cart-actions">
+                <button className="empty-cart" onClick={clearCart}>
+                  Empty Cart
+                </button>
+                <button
+                  className="buy-now"
+                  onClick={() => navigate("/checkout")}
+                >
+                  Proceed to Pay
+                </button>
+              </div>
             </div>
           </>
         ) : (
-          <h1>Your cart is empty</h1>
+          <div className="cart-empty-card">
+            <p>🛒 Your cart is empty</p>
+            <Link to="/" className="return-home-btn">
+              Continue Shopping
+            </Link>
+          </div>
         )}
       </div>
     </div>
