@@ -92,6 +92,8 @@
     padding: 10px 0;
     z-index: 999;
     border-top: 1px solid #333;
+    max-height: calc(100vh - 55px);
+    overflow-y: auto;
   }
 
   .menu.menu-open {
